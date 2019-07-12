@@ -1,0 +1,16 @@
+---
+# tasks file for docker-deploy
+- name: build image
+  docker_image:
+      path: ./Dockerfile
+      name: my_hello
+      tag: v1
+
+- name: Container started
+  docker_container:
+      name: boxfuse
+      image: my_hello:v1
+      state: started
+      restart: yes
+      ports:
+      - "8080:8080"

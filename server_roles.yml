@@ -1,0 +1,8 @@
+---
+- name: deploy docker container
+  hosts: all
+  become: yes
+
+  roles:
+    - docker-install
+    - docker-deploy
