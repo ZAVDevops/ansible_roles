@@ -1,2 +1,5 @@
 ---
 # handlers file for docker-install
+- name: Restart docker
+  become: yes
+  systemd: name=docker state=restarted

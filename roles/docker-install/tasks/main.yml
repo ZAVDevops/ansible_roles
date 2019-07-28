@@ -1,6 +1,49 @@
 ---
-# tasks file for common
-- name: install packages
-  apt: name={{ item }} state=installed
-  with_items:
-    - docker.io
+- name: get ansible user
+  become: false
+  set_fact: 
+    docker_users: "{{ ansible_user_id }}"
+
+- name: Install list of requed packages
+  become: yes
+  package:
+    name: ['apt-transport-https','ca-certificates','curl','software-properties-common', 'python-pip']
+    state: present
+    update_cache: yes
+
+- name: Add Docker GPG key
+  become: yes
+  apt_key: 
+    url: https://download.docker.com/linux/ubuntu/gpg
+    id: 0EBFCD88
+    state: present
+ 
+- name: Add Docker APT repository
+  become: yes
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ansible_distribution_release}} stable
+
+- name: Install docker
+  become: yes
+  package:
+    name: ['docker-ce']
+    state: present
+    update_cache: yes 
+
+- name: Install pip docker
+  become: yes
+  pip: 
+    name: ['docker']
+    state: present 
+
+- debug:
+    msg: docker_users = {{ docker_users }}
+   
+- name: Ensure docker users are added to the docker group.
+  become: yes
+  user:
+    name: "{{ item }}"
+    groups: docker
+    append: true
+  with_items: "{{ docker_users }}"
+  notify: Restart docker

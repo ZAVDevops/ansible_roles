@@ -1,10 +1,23 @@
 ---
 # tasks file for docker-deploy
+- set_fact:
+    random_var: "{{ 10000 | random }}"
+  run_once: yes
+
+- name: copy Dockerfile
+  copy:
+    src: ./Dockerfile
+    dest: /tmp/ansible-tmp/dockerfiles"{{ random_var }}"/
+
 - name: build image
   docker_image:
-      path: ./Dockerfile
-      name: my_hello
-      tag: v1
+    build:
+      path: /tmp/ansible-tmp/dockerfiles"{{ random_var }}"/
+      pull: false
+    state: present
+    name: my_hello
+    tag: v1
+    source: build
 
 - name: Container started
   docker_container:
