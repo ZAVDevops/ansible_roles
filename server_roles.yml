@@ -5,4 +5,9 @@
 
   roles:
     - docker-install
-    - docker-deploy
+  tasks:
+    - meta: flush_handlers
+    # Перезапустить ssh сессию необходимо для того, чтобы применились изменения (добавление пользователя в группу docker)
+    - meta: reset_connection
+    - include_role:
+        name: docker-deploy

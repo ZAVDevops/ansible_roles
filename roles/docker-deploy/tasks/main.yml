@@ -4,12 +4,12 @@
     random_var: "{{ 10000 | random }}"
   run_once: yes
 
-- name: copy Dockerfile
+- name: Copy Dockerfile to remote host
   copy:
     src: ./Dockerfile
     dest: /tmp/ansible-tmp/dockerfiles"{{ random_var }}"/
 
-- name: build image
+- name: Build image
   docker_image:
     build:
       path: /tmp/ansible-tmp/dockerfiles"{{ random_var }}"/
@@ -27,3 +27,9 @@
       restart: yes
       ports:
       - "8080:8080"
+
+- name: Delete temp files
+  file:
+    state: absent
+    path: /tmp/ansible-tmp/dockerfiles"{{ random_var }}"/
+
